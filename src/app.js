@@ -1,34 +1,39 @@
-const express = require('express');
+const express = require("express");
+const dbConnect = require("./config/databaseUtil");
+const User = require("./model/user");
 
 const app = express();
 
+app.post('/signup',async (req,res) => {
 
-app.get("/user", (req, res,next) => {
-    console.log(req.query);
-    res.send({name:'shiva',age: 21});
-});
+    //Creating New instance of the user model --OR-- in simple term creating a new User for the user_data
+    const user = new User({
+        firstName:'saru',
+        lastName:'Natarajan',
+        gender:'female',
+        email:'saru@gmail.com',
+        password:'saru@123'
+    })
 
-app.get("/host/:userId/:name/:pswd", (req, res,next) => {
-    console.log(req.params);
-    res.send({name:'shiva',age: 21});
-});
+    try{
+        await user.save();
+        res.send("Data added successfully in db")
+    }
+    catch(err){
+        res.status(400).send('err occured while saving the data:'+err)
+    }
 
-// app.post("/host", (req, res) => {
-//     console.log(req.url, req.method);
-//     res.send('this is the host dashboard, Msg From Host');
-// });
+})
 
-// app.get("/user", (req, res) => {
-//     console.log(req.url, req.method);
-//     res.send('this is the user dashboard');
-// });
 
-// app.use("/", (req, res,next) => {
-//     console.log(req.url, req.method);
-//     res.send('this is the tinder msg');
-// });
-
-const PORT = 7000;
-app.listen(PORT, () => {
-    console.log(`Server running on address http://localhost:${PORT}`);
-});
+dbConnect()
+  .then(() => {
+    console.log("connection established successful:");
+    const PORT = 7000;
+    app.listen(PORT, () => {
+      console.log(`Server running on address http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("some err occured while connection:", err);
+  });
