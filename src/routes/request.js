@@ -50,14 +50,50 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res) => 
   }  
 })
 
-requestRouter.post("/request/send/ignored", userAuth, (req,res) => {
+
+
+requestRouter.post('/request/review/:status/:requestId',userAuth, async (req,res) => {
+
+  try{
+    
+    const loggedInUser = req.user;
+
+    const status = req.params.status
+    const requestId = req.params.requestId
+
+    const allowedStatus = ['accepted','rejected'];
+    if(!allowedStatus.includes(status)){
+      throw new Error('Invalid status code:')
+    }
+
+    const connectionReq = await ConnectionReq.findOne({
+      _id: requestId,
+      toUserId: loggedInUser._id,
+      status: 'interested',
+    })
+    if(!connectionReq){
+      return res.send(400).json({
+        message: 'not valid connection status',
+
+      })
+    }
+
+    connectionReq.status = status;
+
+    const data = await connectionReq.save();
+
+    res.status(400).json({
+      message: 'connetion request '+ status,
+      data
+    })
+    
+  }
+  catch(err){
+    res.status(400).send('Error: ' + err.message)
+  }
+
 
 })
 
-requestRouter.post('/request/review/accepted',userAuth,(req,res) => {
 
-})
-requestRouter.post('/request/review/rejected',userAuth,(req,res) => {
-
-})
 module.exports = requestRouter;
