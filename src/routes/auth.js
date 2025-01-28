@@ -25,7 +25,7 @@ authRouter.post("/signup", async (req, res) => {
     });
     const savedUser = await user.save();
 
-    const token = await jwt.sign({_id: savedUser._id},"DEV@Tinder$786",{expiresIn: '7h'});
+    const token = await jwt.sign({_id: savedUser._id},process.env.SECRETEKEY,{expiresIn: '7h'});
     res.cookie("token", token)
 
     res.json({message:"Data added successfully in db", data: savedUser});
@@ -48,7 +48,7 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
 
       // create JWT token
-      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$786", {expiresIn: '7h'}); //hiding id info and giving secreteKey
+      const token = await jwt.sign({ _id: user._id }, process.env.SECRETEKEY, {expiresIn: '7h'}); //hiding id info and giving secreteKey
 
       //add token to the cookie and send back to the user
       res.cookie("token", token);

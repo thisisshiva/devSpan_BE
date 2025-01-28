@@ -1,6 +1,8 @@
 const express = require("express");
 const dbConnect = require("./config/databaseUtil");
 const cookie_parser = require("cookie-parser");
+require('dotenv').config()
+
 const cors = require("cors");
 
 //Local imports
@@ -29,7 +31,7 @@ app.use("/", userRouter);
 dbConnect()
   .then(() => {
     console.log("connection established successful:");
-    const PORT = 7000;
+    const PORT = process.env.PORT;
     app.listen(PORT, () => {
       console.log(`Server running on address http://localhost:${PORT}`);
     });

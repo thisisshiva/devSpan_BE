@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const dbConnect = async ()=>{
-    await mongoose.connect("mongodb+srv://thisisshiva:rootshiva@cluster0.ymgfk.mongodb.net/devTinder")
+    await mongoose.connect(process.env.DATABASE_URL)
 }
 
 module.exports= dbConnect
