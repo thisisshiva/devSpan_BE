@@ -7,12 +7,12 @@ const userAuth = async (req, res, next) => {
     //Read the token form the req cookies
     const { token } = req.cookies;
     if(!token){
-        throw new Error('Token is expired!!!!!!')
+        return res.status(401).send('Please Login')
     }
     const { _id } = await jwt.verify(token, "DEV@Tinder$786"); //decoding
 
     //Validate the user
-    const user = await User.findOne({ _id });
+    const user = await User.findOne({_id});
     if (!user) {
       throw new Error("User is not valid");
     }
@@ -20,7 +20,7 @@ const userAuth = async (req, res, next) => {
     next();
 
   } catch (err) {
-    res.status(400).send("Authentication failed");
+    res.status(400).send("Error:" + err.message);
   }
 };
 

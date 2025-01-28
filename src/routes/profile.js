@@ -9,13 +9,13 @@ profileRouter.get("/profile", userAuth, async (req, res) => {
     if (!findingUser) {
       throw new Error("User does not Exists");
     }
-    res.send("cookie fetched" + findingUser);
+    res.send(findingUser);
   } catch (err) {
     res.status(400).send("Error" + err.message);
   }
 });
 
-profileRouter.post('/profile/edit', userAuth ,async (req,res) => {
+profileRouter.patch('/profile/edit', userAuth ,async (req,res) => {
     try{
 
         if(!profileEditValidation(req)){
@@ -28,8 +28,9 @@ profileRouter.post('/profile/edit', userAuth ,async (req,res) => {
         Object.keys(req.body).forEach((keys)=>(loggedInUser[keys]=req.body[keys]));
         await loggedInUser.save();
 
-        res.send(`${loggedInUser.firstName} you have successfully edited`)
-    }catch(err){
+        res.json({message:`${loggedInUser.firstName} you have successfully edited`,data: loggedInUser})
+    }
+    catch(err){
         res.send('ERROR:'+ err.message)
     }
 })

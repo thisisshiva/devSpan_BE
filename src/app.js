@@ -1,22 +1,30 @@
 const express = require("express");
 const dbConnect = require("./config/databaseUtil");
-const cookie_parser = require('cookie-parser')
+const cookie_parser = require("cookie-parser");
+const cors = require("cors");
 
 //Local imports
-const authRouter = require('./routes/auth')
-const profileRouter = require('./routes/profile')
-const requestRouter = require('./routes/request');
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 
 const app = express();
 
-app.use(express.json());
-app.use(cookie_parser())
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-app.use("/",authRouter)
-app.use("/",profileRouter)
-app.use("/",requestRouter)
-app.use("/",userRouter)
+app.use(express.json());
+app.use(cookie_parser());
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
+app.use("/", userRouter);
 
 dbConnect()
   .then(() => {

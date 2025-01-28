@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      default: "https://media.istockphoto.com/id/1393750072/vector/flat-white-icon-man-for-web-design-silhouette-flat-illustration-vector-illustration-stock.jpg?s=2048x2048&w=is&k=20&c=ghuWTYunO5oRNKtdm6ot58tlfw7oB1WV_o8NzHSjZKc=",
+      default: "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg",
     },
     about: {
       type: String,
@@ -62,6 +62,13 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre('save',function(next){
+  if(this.gender){
+  this.gender = this.gender.toLowerCase();
+}
+next();
+});
 
 const User = mongoose.model('User', userSchema);
 

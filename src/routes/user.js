@@ -2,6 +2,7 @@ const  express = require('express');
 const { userAuth } = require('../middleware/auth');
 const ConnectionReqModel = require('../model/connectionReq');
 const userRouter = express.Router();
+const User = require('../model/user')
 
 // show all the pendin connection request for the loggedin user 
 userRouter.get('/user/requests/received', userAuth, async (req,res,) => {
@@ -47,6 +48,39 @@ userRouter.get('/user/requests/connections', userAuth, async (req,res)=>{
             message: 'Error:',
             data: err.message
         })
+    }
+})
+
+userRouter.get('/feed' , userAuth, async (req,res) => {
+    try{
+        const loggedInUser = req.user
+        const page = Number(req.query.page) || 1;
+        let limit = Number(req.query.limit) || 10;
+        limit = limit>50 ? 50 : limit; 
+        const skip = (page-1) * limit
+
+        const allConnectionReq = await ConnectionReqModel.find({
+            $or: [ {fromUserId: loggedInUser._id}, {toUserId: loggedInUser._id} ]
+        }).select('fromUserId toUserId')
+
+        const hideUserFromFeed = new Set()
+        allConnectionReq.forEach(req=>{
+            hideUserFromFeed.add(req.fromUserId.toString())
+            hideUserFromFeed.add(req.toUserId.toString())
+        })
+        
+
+        const userNeedsToDisplay = await User.find({
+            $and: [ 
+                { _id: {$nin: Array.from(hideUserFromFeed)} } , 
+                { _id: {$ne: loggedInUser._id } }
+            ]
+        }).select('firstName lastName skills about photoUrl').skip(skip).limit(limit)
+
+        res.send(userNeedsToDisplay)
+    }
+    catch(err){
+        res.status(400).send('Error: '+ err.message);
     }
 })
 

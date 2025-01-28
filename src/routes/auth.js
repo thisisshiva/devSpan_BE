@@ -23,8 +23,12 @@ authRouter.post("/signup", async (req, res) => {
       email,
       password: passwordHash,
     });
-    await user.save();
-    res.send("Data added successfully in db");
+    const savedUser = await user.save();
+
+    const token = await jwt.sign({_id: savedUser._id},"DEV@Tinder$786",{expiresIn: '7h'});
+    res.cookie("token", token)
+
+    res.json({message:"Data added successfully in db", data: savedUser});
   } catch (err) {
     res.status(400).send("err occured while saving the data:" + err.message);
   }
@@ -32,6 +36,7 @@ authRouter.post("/signup", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
   try {
+    
     const { email, password } = req.body;
 
     const user = await User.findOne({ email: email });
@@ -47,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
 
       //add token to the cookie and send back to the user
       res.cookie("token", token);
-      res.send("Login Successful");
+      res.send(user);
     } else {
       throw new Error("Invalid Crediential");
     }
