@@ -32,7 +32,7 @@ dbConnect()
   .then(() => {
     console.log("connection established successful:");
     const PORT = process.env.PORT;
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on address http://localhost:${PORT}`);
     });
   })
