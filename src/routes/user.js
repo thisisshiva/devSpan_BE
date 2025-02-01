@@ -30,8 +30,8 @@ userRouter.get('/user/requests/connections', userAuth, async (req,res)=>{
 
         const connectionReq = await ConnectionReqModel.find({
             $or: [
-                {fromUserId: loggedinUser , status: 'accepted' },
-                {toUserId: loggedinUser , status: 'accepted' }
+                {fromUserId: loggedinUser._id , status: 'accepted' },
+                {toUserId: loggedinUser._id , status: 'accepted' }
             ]
         }).populate('fromUserId', 'firstName lastName photoUrl skills about').populate('toUserId', 'firstName lastName photoUrl skills about')
 
