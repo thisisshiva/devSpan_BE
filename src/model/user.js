@@ -63,6 +63,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.index({userName:1, email:1,gender:1})    //compound index makes db query fast
+
 userSchema.pre('save',function(next){
   if(this.gender){
   this.gender = this.gender.toLowerCase();

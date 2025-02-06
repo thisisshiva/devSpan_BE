@@ -17,6 +17,11 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res) => 
       return res.status(400).json({message:'invalid status type:' + status})
     }
 
+    const toUserExistInDb = await User.findById(toUserId)
+    if(!toUserExistInDb){
+      return res.status(400).send({message: 'User is not found'})
+    }
+
     const existingRequestOrNot = await ConnectionReq.findOne({
       $or: [
         { fromUserId,toUserId },
@@ -25,11 +30,6 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res) => 
     })
     if(existingRequestOrNot){
       return res.status(400).send({message : 'connection req already exists'})
-    }
-
-     const userExistInDb = await User.findById(toUserId)
-    if(!userExistInDb){
-      return res.status(400).send({message: 'User is not found'})
     }
 
     const connectionReq = new ConnectionReq({
@@ -41,7 +41,7 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res) => 
 
    
     res.json({
-      message: `${req.user.firstName} is ${status} in ${userExistInDb.firstName}`,
+      message: `${req.user.firstName} is ${status} in ${toUserExistInDb.firstName}`,
       data,
     })
   }
@@ -73,8 +73,7 @@ requestRouter.post('/request/review/:status/:requestId',userAuth, async (req,res
     })
     if(!connectionReq){
       return res.send(400).json({
-        message: 'not valid connection status',
-
+        message: 'connection request not found',
       })
     }
 
@@ -91,7 +90,6 @@ requestRouter.post('/request/review/:status/:requestId',userAuth, async (req,res
   catch(err){
     res.status(400).send('Error: ' + err.message)
   }
-
 
 })
 

@@ -3,7 +3,7 @@ const profileRouter = express.Router();
 const { userAuth } = require("../middleware/auth");
 const {profileEditValidation} = require('../utils/validation')
 
-profileRouter.get("/profile", userAuth, async (req, res) => {
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const findingUser = req.user;
     if (!findingUser) {
@@ -17,21 +17,19 @@ profileRouter.get("/profile", userAuth, async (req, res) => {
 
 profileRouter.patch('/profile/edit', userAuth ,async (req,res) => {
     try{
-
         if(!profileEditValidation(req)){
-            throw new Error('Cannot edit')
+            throw new Error("Invalid Edit request")
         }
 
         const loggedInUser = req.user
 
-        
         Object.keys(req.body).forEach((keys)=>(loggedInUser[keys]=req.body[keys]));
         await loggedInUser.save();
 
         res.json({message:`${loggedInUser.firstName} you have successfully edited`,data: loggedInUser})
     }
-    catch(err){
-        res.send('ERROR:'+ err.message)
+    catch(error){
+        res.send('ERROR :'+ error.message)
     }
 })
 

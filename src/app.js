@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173","https://devspan-frontend.onrender.com"],
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -32,7 +32,7 @@ dbConnect()
   .then(() => {
     console.log("connection established successful:");
     const PORT = process.env.PORT;
-    app.listen(PORT, '0.0.0.0', () => {
+    app.listen(PORT,() => {
       console.log(`Server running on address http://localhost:${PORT}`);
     });
   })
